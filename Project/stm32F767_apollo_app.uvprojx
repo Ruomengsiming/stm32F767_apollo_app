@@ -334,7 +334,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F767xx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Core;..\HALLibraries\Inc;..\HALLibraries\Src;..\User</IncludePath>
+              <IncludePath>..\Core;..\HALLibraries\Inc;..\HALLibraries\Src;..\User;..\System\Sys;..\System\Delay;..\System\Usart;..\Hardware\LED</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -840,9 +840,33 @@
         </Group>
         <Group>
           <GroupName>Hardware</GroupName>
+          <Files>
+            <File>
+              <FileName>hal_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\LED\hal_led.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>System</GroupName>
+          <Files>
+            <File>
+              <FileName>sys.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\System\Sys\sys.c</FilePath>
+            </File>
+            <File>
+              <FileName>delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\System\Delay\delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\System\Usart\usart.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>User</GroupName>
