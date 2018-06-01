@@ -47,7 +47,7 @@ int main(void)
 	
 	LED_Init();														//初始化LED
 	
-	while (1) {
+	while (true) {
 		
 #ifdef	DEVICE_DEBUG
 		DeBugMain();
@@ -74,7 +74,7 @@ void DeBugMain(void)
 {
 	Stm32_CalculagraphTypeDef CalTimer;
 	
-	while (1) {
+	while (true) {
 		
 		Stm32_Calculagraph_CountdownSec(&CalTimer, 1);
 		while (Stm32_Calculagraph_IsExpiredSec(&CalTimer) != true);
