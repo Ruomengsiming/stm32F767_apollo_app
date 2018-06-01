@@ -28,16 +28,16 @@ void LED_Init(void)
 	LED0_RCC_GPIO_CLK_ENABLE();
 	LED1_RCC_GPIO_CLK_ENABLE();
 	
-	GPIO_Initure.Pin	= LED0_PIN;
-	GPIO_Initure.Mode	= GPIO_MODE_OUTPUT_PP;
-	GPIO_Initure.Pull	= GPIO_PULLUP;
-	GPIO_Initure.Speed	= GPIO_SPEED_HIGH;
+	GPIO_Initure.Pin		= LED0_PIN;
+	GPIO_Initure.Mode		= GPIO_MODE_OUTPUT_PP;
+	GPIO_Initure.Pull		= GPIO_PULLUP;
+	GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
 	HAL_GPIO_Init(LED0_GPIOx, &GPIO_Initure);
 	
-	GPIO_Initure.Pin	= LED1_PIN;
-	GPIO_Initure.Mode	= GPIO_MODE_OUTPUT_PP;
-	GPIO_Initure.Pull	= GPIO_PULLUP;
-	GPIO_Initure.Speed	= GPIO_SPEED_HIGH;
+	GPIO_Initure.Pin		= LED1_PIN;
+	GPIO_Initure.Mode		= GPIO_MODE_OUTPUT_PP;
+	GPIO_Initure.Pull		= GPIO_PULLUP;
+	GPIO_Initure.Speed		= GPIO_SPEED_HIGH;
 	HAL_GPIO_Init(LED1_GPIOx, &GPIO_Initure);
 	
 	HAL_GPIO_WritePin(LED0_GPIOx, LED0_PIN, GPIO_PIN_SET);

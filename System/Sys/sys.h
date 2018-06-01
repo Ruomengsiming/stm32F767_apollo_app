@@ -4,6 +4,8 @@
 #include "stm32f7xx.h"
 #include "stm32f7xx_hal.h"
 #include "core_cm7.h"
+#include "stdio.h"
+#include "string.h"
 #include "stdbool.h"
 
 #define SYSTEM_SUPPORT_OS		0											//定义系统文件夹是否支持OS 0:不支持os 1:支持os

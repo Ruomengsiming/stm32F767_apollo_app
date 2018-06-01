@@ -41,6 +41,10 @@ int main(void)
 	Stm32_Clock_Init(432, 25, 2, 9);										//初始化时钟216Mhz 
 	Delay_Init(216);													//初始化延时
 	
+	Uart1_Init(9600);													//初始化串口1波特率9600
+	Uart2_Init(9600);													//初始化串口2波特率9600
+	Uart3_Init(9600);													//初始化串口3波特率9600
+	
 	LED_Init();														//初始化LED
 	
 	while (1) {
@@ -51,7 +55,7 @@ int main(void)
 		
 		
 		
-		
+		Delay_MS(1000);
 		
 	}
 }
@@ -72,7 +76,7 @@ void DeBugMain(void)
 	
 	while (1) {
 		
-		Stm32_Calculagraph_CountdownSec(&CalTimer, 2);
+		Stm32_Calculagraph_CountdownSec(&CalTimer, 1);
 		while (Stm32_Calculagraph_IsExpiredSec(&CalTimer) != true);
 		
 		for (int i = 0; i < 6; i++) {
@@ -81,6 +85,30 @@ void DeBugMain(void)
 		
 			Delay_MS(200);
 		}
+		
+		Uart1_PortSerialEnable(DISABLE, DISABLE);
+		if (USART1_RX_STA & 0x8000) {
+			printf("RecvData : %s\n", USART1_RX_BUF);
+			memset((void*)USART1_RX_BUF, 0x00, sizeof(USART1_RX_BUF));
+			USART1_RX_STA = 0;
+		}
+		Uart1_PortSerialEnable(ENABLE, DISABLE);
+		
+		Uart2_PortSerialEnable(DISABLE, DISABLE);
+		if (USART2_RX_STA & 0x8000) {
+			printf("RecvData : %s\n", USART2_RX_BUF);
+			memset((void*)USART2_RX_BUF, 0x00, sizeof(USART2_RX_BUF));
+			USART2_RX_STA = 0;
+		}
+		Uart2_PortSerialEnable(ENABLE, DISABLE);
+		
+		Uart3_PortSerialEnable(DISABLE, DISABLE);
+		if (USART3_RX_STA & 0x8000) {
+			printf("RecvData : %s\n", USART3_RX_BUF);
+			memset((void*)USART3_RX_BUF, 0x00, sizeof(USART3_RX_BUF));
+			USART3_RX_STA = 0;
+		}
+		Uart3_PortSerialEnable(ENABLE, DISABLE);
 		
 	}
 }

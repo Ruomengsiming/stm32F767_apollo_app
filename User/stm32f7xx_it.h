@@ -2,10 +2,16 @@
 #define   __STM32F7xx_IT_H
 
 #include "sys.h"
+#include "delay.h"
+#include "usart.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void USART1_IRQHandler(void);
+void USART2_IRQHandler(void);
+void USART3_IRQHandler(void);
 
 void NMI_Handler(void);
 void HardFault_Handler(void);
