@@ -18,6 +18,7 @@
 #include "delay.h"
 #include "usart.h"
 #include "hal_led.h"
+#include "hal_key.h"
 
 /****************************************** Select DEBUG *************************************************/
 //#define	DEVICE_DEBUG													//定义开启设备调试
@@ -46,6 +47,7 @@ int main(void)
 	Uart3_Init(9600);													//初始化串口3波特率9600
 	
 	LED_Init();														//初始化LED
+	KEY_Init();														//初始化KEY
 	
 	while (true) {
 		
@@ -72,10 +74,41 @@ int main(void)
 **********************************************************************************************************/
 void DeBugMain(void)
 {
+#if 0
 	Stm32_CalculagraphTypeDef CalTimer;
+	u8 key;
+	u8 led0sta = OFF, led1sta = OFF;
+#endif
 	
 	while (true) {
 		
+#if 0
+		key = KEY_Scan(false);
+		if (key) {
+			switch (key)
+			{
+				case KEY0_PRES :
+					led0sta = !led0sta;
+					led1sta = !led1sta;
+					break;
+				case KEY1_PRES :
+					led0sta = !led0sta;
+					break;
+				case KEY2_PRES :
+					led1sta = !led1sta;
+					break;
+				case WKUP_PRES :
+					led0sta = !led1sta;
+					led1sta = !led1sta;
+					break;
+			}
+			LED0(led0sta);
+			LED1(led1sta);
+		}
+		else Delay_MS(10);
+#endif
+		
+#if 0
 		Stm32_Calculagraph_CountdownSec(&CalTimer, 1);
 		while (Stm32_Calculagraph_IsExpiredSec(&CalTimer) != true);
 		
@@ -85,7 +118,9 @@ void DeBugMain(void)
 		
 			Delay_MS(200);
 		}
+#endif
 		
+#if 0
 		Uart1_PortSerialEnable(DISABLE, DISABLE);
 		if (USART1_RX_STA & 0x8000) {
 			printf("RecvData : %s\n", USART1_RX_BUF);
@@ -109,6 +144,7 @@ void DeBugMain(void)
 			USART3_RX_STA = 0;
 		}
 		Uart3_PortSerialEnable(ENABLE, DISABLE);
+#endif
 		
 	}
 }

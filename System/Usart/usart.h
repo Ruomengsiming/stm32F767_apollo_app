@@ -32,7 +32,6 @@ extern UART_HandleTypeDef UART1_Handler;									//UART1句柄
 extern UART_HandleTypeDef UART2_Handler;									//UART2句柄
 extern UART_HandleTypeDef UART3_Handler;									//UART3句柄
 
-
 void Uart1_Init(u32 bound);												//串口1初始化
 void Uart2_Init(u32 bound);												//串口2初始化
 void Uart3_Init(u32 bound);												//串口3初始化

@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F767xx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Core;..\HALLibraries\Inc;..\HALLibraries\Src;..\User;..\System\Sys;..\System\Delay;..\System\Usart;..\Hardware\LED</IncludePath>
+              <IncludePath>..\Core;..\HALLibraries\Inc;..\HALLibraries\Src;..\User;..\System\Sys;..\System\Delay;..\System\Usart;..\Hardware\LED;..\Hardware\KEY</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -848,6 +848,11 @@
               <FileName>hal_led.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Hardware\LED\hal_led.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\KEY\hal_key.c</FilePath>
             </File>
           </Files>
         </Group>
