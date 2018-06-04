@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>STM32F767IGTx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F7xx_DFP.2.9.0</PackID>
+          <PackID>Keil.STM32F7xx_DFP.2.10.0</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
           <Cpu>IRAM(0x20020000,0x60000) IRAM2(0x20000000,0x20000) IROM(0x08000000,0x100000) IROM2(0x00200000,0x100000) CPUTYPE("Cortex-M7") FPU3(DFPU) CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F767xx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Core;..\HALLibraries\Inc;..\HALLibraries\Src;..\User;..\System\Sys;..\System\Delay;..\System\Usart;..\Hardware\LED;..\Hardware\KEY</IncludePath>
+              <IncludePath>..\Core;..\HALLibraries\Inc;..\HALLibraries\Src;..\User;..\System\Sys;..\System\Delay;..\System\Usart;..\Libraries\FreeRTOS\Source;..\Libraries\FreeRTOS\Source\include;..\Libraries\FreeRTOS\Source\portable\Keil;..\Libraries\FreeRTOS\Source\portable\MemMang;..\Libraries\FreeRTOS\Source\portable\RVDS\ARM_CM7\r0p1;..\Hardware\IWDG;..\Hardware\WWDG;..\Hardware\LED;..\Hardware\KEY;..\Hardware\EXTI</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -845,6 +845,16 @@
           <GroupName>Hardware</GroupName>
           <Files>
             <File>
+              <FileName>hal_iwdg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\IWDG\hal_iwdg.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_wwdg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\WWDG\hal_wwdg.c</FilePath>
+            </File>
+            <File>
               <FileName>hal_led.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Hardware\LED\hal_led.c</FilePath>
@@ -853,6 +863,11 @@
               <FileName>hal_key.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Hardware\KEY\hal_key.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_exti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\EXTI\hal_exti.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -873,6 +888,61 @@
               <FileName>usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\System\Usart\usart.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>FreeRTOSCore</GroupName>
+          <Files>
+            <File>
+              <FileName>croutine.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\FreeRTOS\Source\croutine.c</FilePath>
+            </File>
+            <File>
+              <FileName>event_groups.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\FreeRTOS\Source\event_groups.c</FilePath>
+            </File>
+            <File>
+              <FileName>list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\FreeRTOS\Source\list.c</FilePath>
+            </File>
+            <File>
+              <FileName>queue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\FreeRTOS\Source\queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>stream_buffer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\FreeRTOS\Source\stream_buffer.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\FreeRTOS\Source\tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>timers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\FreeRTOS\Source\timers.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>FreeRTOSPortable</GroupName>
+          <Files>
+            <File>
+              <FileName>port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\FreeRTOS\Source\portable\RVDS\ARM_CM7\r0p1\port.c</FilePath>
+            </File>
+            <File>
+              <FileName>heap_4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Libraries\FreeRTOS\Source\portable\MemMang\heap_4.c</FilePath>
             </File>
           </Files>
         </Group>

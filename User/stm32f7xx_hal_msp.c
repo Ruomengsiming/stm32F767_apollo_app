@@ -16,6 +16,16 @@
 #include "sys.h"
 #include "delay.h"
 #include "usart.h"
+#include "hal_iwdg.h"
+#include "hal_wwdg.h"
+#include "hal_led.h"
+#include "hal_key.h"
+#include "hal_exti.h"
+
+#if SYSTEM_SUPPORT_OS													//如果使用OS, 则包括下面的头文件(以FreeRTOS为例)即可
+#include "FreeRTOS.h"													//支持OS时使用
+#include "task.h"
+#endif
 
 /**********************************************************************************************************
  @Function			void HAL_MspInit(void)
@@ -37,6 +47,44 @@ void HAL_MspInit(void)
 void HAL_MspDeInit(void)
 {
 	
+}
+
+
+/**********************************************************************************************************
+ @Function			void HAL_WWDG_MspInit(WWDG_HandleTypeDef *hwwdg)
+ @Description			WWDG底层驱动, 时钟配置, 中断配置
+					此函数会被HAL_WWDG_Init()调用
+ @Input				hwwdg:窗口看门狗句柄
+ @Output				void
+ @Return				void
+**********************************************************************************************************/
+void HAL_WWDG_MspInit(WWDG_HandleTypeDef *hwwdg)
+{
+	if (hwwdg->Instance == WWDG)
+	{
+		__HAL_RCC_WWDG_CLK_ENABLE();										//使能窗口看门狗时钟
+		
+		HAL_NVIC_SetPriority(WWDG_IRQn, 4, 4);								//强占优先级为4, 次优先级4
+		HAL_NVIC_EnableIRQ(WWDG_IRQn);									//使能窗口看门狗中断
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void HAL_WWDG_MspDeInit(WWDG_HandleTypeDef *hwwdg)
+ @Description			WWDG底层驱动, 时钟失能, 中断关闭
+					此函数会被HAL_WWDG_DeInit()调用
+ @Input				hwwdg:窗口看门狗句柄
+ @Output				void
+ @Return				void
+**********************************************************************************************************/
+void HAL_WWDG_MspDeInit(WWDG_HandleTypeDef *hwwdg)
+{
+	if (hwwdg->Instance == WWDG)
+	{
+		__HAL_RCC_WWDG_CLK_DISABLE();										//失能窗口看门狗时钟
+		
+		HAL_NVIC_DisableIRQ(WWDG_IRQn);									//失能窗口看门狗中断
+	}
 }
 
 
@@ -69,7 +117,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		GPIO_Initure.Alternate	= GPIO_AF7_USART1;							//复用为串口1
 		HAL_GPIO_Init(GPIOA, &GPIO_Initure);								//初始化PA9|PA10
 		
-		HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);							//抢占优先级1, 子优先级0
+		HAL_NVIC_SetPriority(USART1_IRQn, 2, 0);							//抢占优先级2, 子优先级0
 		HAL_NVIC_EnableIRQ(USART1_IRQn);									//使能USART1中断通道
 	}
 	
@@ -85,7 +133,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		GPIO_Initure.Alternate	= GPIO_AF7_USART2;							//复用为串口2
 		HAL_GPIO_Init(GPIOA, &GPIO_Initure);								//初始化PA2|PA3
 		
-		HAL_NVIC_SetPriority(USART2_IRQn, 1, 1);							//抢占优先级1, 子优先级1
+		HAL_NVIC_SetPriority(USART2_IRQn, 2, 1);							//抢占优先级2, 子优先级1
 		HAL_NVIC_EnableIRQ(USART2_IRQn);									//使能USART2中断通道
 	}
 	
@@ -101,7 +149,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		GPIO_Initure.Alternate	= GPIO_AF7_USART3;							//复用为串口3
 		HAL_GPIO_Init(GPIOB, &GPIO_Initure);								//初始化PB10|PB11
 		
-		HAL_NVIC_SetPriority(USART3_IRQn, 1, 2);							//抢占优先级1, 子优先级2
+		HAL_NVIC_SetPriority(USART3_IRQn, 2, 2);							//抢占优先级2, 子优先级2
 		HAL_NVIC_EnableIRQ(USART3_IRQn);									//使能USART3中断通道
 	}
 }

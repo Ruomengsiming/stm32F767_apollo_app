@@ -14,6 +14,90 @@
   */
 
 #include "stm32f7xx_it.h"
+#include "hal_iwdg.h"
+#include "hal_wwdg.h"
+#include "hal_led.h"
+#include "hal_key.h"
+#include "hal_exti.h"
+
+#if SYSTEM_SUPPORT_OS													//如果使用OS, 则包括下面的头文件(以FreeRTOS为例)即可
+#include "FreeRTOS.h"													//支持OS时使用
+#include "task.h"
+#endif
+
+/**********************************************************************************************************
+ @Function			void EXTI0_IRQHandler(void)
+ @Description			外部中断0中断服务程序
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void EXTI0_IRQHandler(void)
+{
+	HAL_GPIO_EXTI_IRQHandler(WKUP_PIN);									//调用中断处理公共函数
+}
+
+/**********************************************************************************************************
+ @Function			void EXTI2_IRQHandler(void)
+ @Description			外部中断2中断服务程序
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void EXTI2_IRQHandler(void)
+{
+	HAL_GPIO_EXTI_IRQHandler(KEY1_PIN);									//调用中断处理公共函数
+}
+
+/**********************************************************************************************************
+ @Function			void EXTI3_IRQHandler(void)
+ @Description			外部中断3中断服务程序
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void EXTI3_IRQHandler(void)
+{
+	HAL_GPIO_EXTI_IRQHandler(KEY0_PIN);									//调用中断处理公共函数
+}
+
+/**********************************************************************************************************
+ @Function			void EXTI15_10_IRQHandler(void)
+ @Description			外部中断15_10中断服务程序
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void EXTI15_10_IRQHandler(void)
+{
+	HAL_GPIO_EXTI_IRQHandler(KEY2_PIN);									//调用中断处理公共函数
+}
+
+/**********************************************************************************************************
+ @Function			void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+ @Description			外部中断处理回调函数
+					在HAL库中所有外部中断服务函数都会调用此函数
+ @Input				GPIO_Pin : GPIO_Pin
+ @Return				void
+**********************************************************************************************************/
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	switch (GPIO_Pin)
+	{
+		case KEY0_PIN:
+			EXTI_KEY0_Event_IRQn();
+			break;
+		
+		case KEY1_PIN:
+			EXTI_KEY1_Event_IRQn();
+			break;
+		
+		case KEY2_PIN:
+			EXTI_KEY2_Event_IRQn();
+			break;
+		
+		case WKUP_PIN:
+			EXTI_WKUP_Event_IRQn();
+			break;
+	}
+}
+
 
 /**********************************************************************************************************
  @Function			void USART1_IRQHandler(void)
@@ -24,10 +108,6 @@
 void USART1_IRQHandler(void)
 {
 	u32 timeout = 0;
-	
-#if SYSTEM_SUPPORT_OS
-	OSIntEnter();
-#endif
 	
 	HAL_UART_IRQHandler(&UART1_Handler);									//调用HAL库中断处理公用函数
 	
@@ -43,10 +123,6 @@ void USART1_IRQHandler(void)
 		timeout++;													//超时处理
 		if (timeout > HAL_MAX_DELAY) break;
 	}
-	
-#if SYSTEM_SUPPORT_OS
-	OSIntExit();
-#endif
 }
 
 /**********************************************************************************************************
@@ -58,10 +134,6 @@ void USART1_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
 	u32 timeout = 0;
-	
-#if SYSTEM_SUPPORT_OS
-	OSIntEnter();
-#endif
 	
 	HAL_UART_IRQHandler(&UART2_Handler);									//调用HAL库中断处理公用函数
 	
@@ -77,10 +149,6 @@ void USART2_IRQHandler(void)
 		timeout++;													//超时处理
 		if (timeout > HAL_MAX_DELAY) break;
 	}
-	
-#if SYSTEM_SUPPORT_OS
-	OSIntExit();
-#endif
 }
 
 /**********************************************************************************************************
@@ -92,10 +160,6 @@ void USART2_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
 	u32 timeout = 0;
-	
-#if SYSTEM_SUPPORT_OS
-	OSIntEnter();
-#endif
 	
 	HAL_UART_IRQHandler(&UART3_Handler);									//调用HAL库中断处理公用函数
 	
@@ -111,10 +175,6 @@ void USART3_IRQHandler(void)
 		timeout++;													//超时处理
 		if (timeout > HAL_MAX_DELAY) break;
 	}
-	
-#if SYSTEM_SUPPORT_OS
-	OSIntExit();
-#endif
 }
 
 /**********************************************************************************************************
@@ -228,6 +288,32 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 
 /**********************************************************************************************************
+ @Function			void WWDG_IRQHandler(void)
+ @Description			窗口看门狗中断服务函数
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void WWDG_IRQHandler(void)
+{
+	HAL_WWDG_IRQHandler(&WWDG_Handler);									//调用HAL库中断处理公用函数
+}
+
+/**********************************************************************************************************
+ @Function			void HAL_WWDG_EarlyWakeupCallback(WWDG_HandleTypeDef* hwwdg)
+ @Description			窗口看门狗中断处理回调函数
+					在HAL库中所有窗口看门狗中断服务函数都会调用此函数
+ @Input				hwwdg : WWDG句柄
+ @Return				void
+**********************************************************************************************************/
+void HAL_WWDG_EarlyWakeupCallback(WWDG_HandleTypeDef* hwwdg)
+{
+	HAL_WWDG_Refresh(&WWDG_Handler);										//更新窗口看门狗值
+	
+	WWDG_EWI_Event_IRQn();
+}
+
+
+/**********************************************************************************************************
  @Function			void NMI_Handler(void)
  @Description			This function handles NMI exception.
  @Input				void
@@ -290,16 +376,6 @@ void UsageFault_Handler(void)
 }
 
 /**********************************************************************************************************
- @Function			void SVC_Handler(void)
- @Description			This function handles SVCall exception.
- @Input				void
- @Return				void
-**********************************************************************************************************/
-void SVC_Handler(void)
-{
-}
-
-/**********************************************************************************************************
  @Function			void DebugMon_Handler(void)
  @Description			This function handles Debug Monitor exception.
  @Input				void
@@ -309,6 +385,19 @@ void DebugMon_Handler(void)
 {
 }
 
+#if (SYSTEM_SUPPORT_OS == 0)
+/**********************************************************************************************************
+ @Function			void SVC_Handler(void)
+ @Description			This function handles SVCall exception.
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void SVC_Handler(void)
+{
+}
+#endif
+
+#if (SYSTEM_SUPPORT_OS == 0)
 /**********************************************************************************************************
  @Function			void PendSV_Handler(void)
  @Description			This function handles PendSVC exception.
@@ -318,8 +407,39 @@ void DebugMon_Handler(void)
 void PendSV_Handler(void)
 {
 }
+#endif
 
+#if SYSTEM_SUPPORT_OS
+extern void xPortSysTickHandler(void);
 
+/**********************************************************************************************************
+ @Function			void SysTick_Handler(void)
+ @Description			This function handles SysTick Handler.
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void SysTick_Handler(void)
+{
+	HAL_SYSTICK_IRQHandler();
+}
+
+/**********************************************************************************************************
+ @Function			void HAL_SYSTICK_Callback(void)
+ @Description			系统嘀嗒定时器中断处理回调函数
+					在HAL库中所有系统嘀嗒定时器中断服务函数都会调用此函数
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void HAL_SYSTICK_Callback(void)
+{
+	if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) {
+		xPortSysTickHandler();
+	}
+	
+	HAL_IncTick();
+	Stm32_IncSecondTick();
+}
+#else
 /**********************************************************************************************************
  @Function			void SysTick_Handler(void)
  @Description			This function handles SysTick Handler.
@@ -343,5 +463,6 @@ void HAL_SYSTICK_Callback(void)
 	HAL_IncTick();
 	Stm32_IncSecondTick();
 }
+#endif
 
 /********************************************** END OF FLEE **********************************************/

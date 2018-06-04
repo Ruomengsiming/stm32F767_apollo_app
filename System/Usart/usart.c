@@ -15,6 +15,11 @@
 
 #include "usart.h"
 
+#if SYSTEM_SUPPORT_OS													//如果使用OS, 则包括下面的头文件(以FreeRTOS为例)即可
+#include "FreeRTOS.h"													//支持OS时使用
+#include "task.h"
+#endif
+
 u8 USART1_RX_BUF[USART1_REC_LEN];    										//USART1接收缓冲,最大USART1_REC_LEN个字节
 u8 USART2_RX_BUF[USART2_REC_LEN];    										//USART2接收缓冲,最大USART2_REC_LEN个字节
 u8 USART3_RX_BUF[USART3_REC_LEN];    										//USART3接收缓冲,最大USART3_REC_LEN个字节

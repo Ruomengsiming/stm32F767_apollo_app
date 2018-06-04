@@ -15,6 +15,11 @@
 
 #include "sys.h"
 
+#if SYSTEM_SUPPORT_OS													//如果使用OS, 则包括下面的头文件(以FreeRTOS为例)即可
+#include "FreeRTOS.h"													//支持OS时使用
+#include "task.h"
+#endif
+
 __IO u32 SystemRunningTimesSecond = 0;										//系统运行时间(S)
 
 /**********************************************************************************************************
@@ -27,7 +32,7 @@ void Stm32_Cache_Enable(void)
 {
 	SCB_EnableICache();													//使能I-Cache
 	SCB_EnableDCache();													//使能D-Cache
-	SCB->CACR|=1<<2;													//强制D-Cache透写,如不开启,实际使用中可能遇到各种问题
+	SCB->CACR |= 1<<2;													//强制D-Cache透写,如不开启,实际使用中可能遇到各种问题
 }
 
 /**********************************************************************************************************

@@ -8,7 +8,7 @@
 #include "string.h"
 #include "stdbool.h"
 
-#define SYSTEM_SUPPORT_OS		0											//定义系统文件夹是否支持OS 0:不支持os 1:支持os
+#define SYSTEM_SUPPORT_OS		1											//定义系统文件夹是否支持OS 0:不支持os 1:支持os
 
 #define ON					1
 #define OFF					0

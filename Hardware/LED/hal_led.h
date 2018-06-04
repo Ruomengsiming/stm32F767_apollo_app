@@ -2,6 +2,8 @@
 #define   __HAL_LED_H
 
 #include "sys.h"
+#include "delay.h"
+#include "usart.h"
 
 #define LED0_GPIOx						GPIOB
 #define LED0_PIN						GPIO_PIN_1

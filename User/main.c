@@ -14,20 +14,47 @@
   */
 
 #include "main.h"
-#include "sys.h"
-#include "delay.h"
-#include "usart.h"
+#include "hal_iwdg.h"
+#include "hal_wwdg.h"
 #include "hal_led.h"
 #include "hal_key.h"
+#include "hal_exti.h"
+
+#if SYSTEM_SUPPORT_OS													//如果使用OS, 则包括下面的头文件(以FreeRTOS为例)即可
+#include "FreeRTOS.h"													//支持OS时使用
+#include "task.h"
+#endif
 
 /****************************************** Select DEBUG *************************************************/
-//#define	DEVICE_DEBUG													//定义开启设备调试
+#define DEVICE_DEBUG		0											//定义开启设备调试
 /********************************************* DEBUG *****************************************************/
-#ifdef	DEVICE_DEBUG
+#if DEVICE_DEBUG
 
 void DeBugMain(void);
 #endif
 /****************************************** Debug Ending *************************************************/
+
+/****************************************** FreeRTOS TASK ************************************************/
+#define START_TASK_PRIO		1											//任务优先级
+#define START_STK_SIZE 		128											//任务堆栈大小
+TaskHandle_t				StartTask_Handler;								//任务句柄
+void start_task(void *pvParameters);										//任务函数
+
+#define LED0_TASK_PRIO		2											//任务优先级
+#define LED0_STK_SIZE 		50											//任务堆栈大小
+TaskHandle_t				LED0Task_Handler;								//任务句柄
+void led0_task(void *pvParameters);										//任务函数
+
+#define LED1_TASK_PRIO		3											//任务优先级
+#define LED1_STK_SIZE 		50											//任务堆栈大小
+TaskHandle_t				LED1Task_Handler;								//任务句柄
+void led1_task(void *pvParameters);										//任务函数
+
+#define FLOAT_TASK_PRIO		4											//任务优先级
+#define FLOAT_STK_SIZE 		128											//任务堆栈大小
+TaskHandle_t				FLOATTask_Handler;								//任务句柄
+void float_task(void *pvParameters);										//任务函数
+/****************************************** FreeRTOS Ending **********************************************/
 
 /**********************************************************************************************************
  @Function			int main(void)
@@ -41,28 +68,131 @@ int main(void)
 	HAL_Init();														//初始化HAL库
 	Stm32_Clock_Init(432, 25, 2, 9);										//初始化时钟216Mhz 
 	Delay_Init(216);													//初始化延时
-	
+#if 0
+	IWDG_Init(IWDG_PRESCALER_64, 1000);									//初始化独立看门狗溢出时间2S
+	WWDG_Init(0x7F, 0x5F, WWDG_PRESCALER_8);								//初始化窗口看门狗
+#endif
 	Uart1_Init(9600);													//初始化串口1波特率9600
 	Uart2_Init(9600);													//初始化串口2波特率9600
 	Uart3_Init(9600);													//初始化串口3波特率9600
 	
 	LED_Init();														//初始化LED
 	KEY_Init();														//初始化KEY
+	EXTI_Init();														//初始化EXTI
 	
+	/* 创建开始任务 */
+	xTaskCreate( (TaskFunction_t )start_task,								//任务函数
+			   (const char*    )"start_task",								//任务名称
+			   (uint16_t       )START_STK_SIZE,							//任务堆栈大小
+			   (void*          )NULL,									//传递给任务函数的参数
+			   (UBaseType_t    )START_TASK_PRIO,							//任务优先级
+			   (TaskHandle_t*  )&StartTask_Handler );						//任务句柄
+	
+	vTaskStartScheduler();												//开启任务调度
+	
+#if 0
 	while (true) {
 		
-#ifdef	DEVICE_DEBUG
+#if DEVICE_DEBUG
 		DeBugMain();
 #endif
 		
 		
+		IWDG_Feed();
 		
 		Delay_MS(1000);
-		
+	}
+#endif
+}
+
+/**********************************************************************************************************
+ @Function			void start_task(void *pvParameters)
+ @Description			start_task			: 开始任务任务函数
+ @Input				pvParameters
+ @Return				void
+**********************************************************************************************************/
+void start_task(void *pvParameters)
+{
+	taskENTER_CRITICAL();												//进入临界区
+	
+	/* 创建LED0任务 */
+	xTaskCreate( (TaskFunction_t )led0_task,								//任务函数
+			   (const char*    )"led0_task",								//任务名称
+			   (uint16_t       )LED0_STK_SIZE,								//任务堆栈大小
+			   (void*          )NULL,									//传递给任务函数的参数
+			   (UBaseType_t    )LED0_TASK_PRIO,							//任务优先级
+			   (TaskHandle_t*  )&LED0Task_Handler );						//任务句柄
+	
+	/* 创建LED1任务 */
+	xTaskCreate( (TaskFunction_t )led1_task,								//任务函数
+			   (const char*    )"led1_task",								//任务名称
+			   (uint16_t       )LED1_STK_SIZE,								//任务堆栈大小
+			   (void*          )NULL,									//传递给任务函数的参数
+			   (UBaseType_t    )LED1_TASK_PRIO,							//任务优先级
+			   (TaskHandle_t*  )&LED1Task_Handler );						//任务句柄
+	
+	/* 浮点测试任务 */
+	xTaskCreate( (TaskFunction_t )float_task,								//任务函数
+			   (const char*    )"float_task",								//任务名称
+			   (uint16_t       )FLOAT_STK_SIZE,							//任务堆栈大小
+			   (void*          )NULL,									//传递给任务函数的参数
+			   (UBaseType_t    )FLOAT_TASK_PRIO,							//任务优先级
+			   (TaskHandle_t*  )&FLOATTask_Handler );						//任务句柄
+	
+	vTaskDelete(StartTask_Handler);										//删除开始任务
+	
+	taskEXIT_CRITICAL();												//退出临界区
+}
+
+/**********************************************************************************************************
+ @Function			void led0_task(void *pvParameters)
+ @Description			led0_task				: LED0任务函数
+ @Input				pvParameters
+ @Return				void
+**********************************************************************************************************/
+void led0_task(void *pvParameters)
+{
+	while (true) {
+		LED0_Toggle();
+		vTaskDelay(500);
 	}
 }
 
-#ifdef	DEVICE_DEBUG
+/**********************************************************************************************************
+ @Function			void led1_task(void *pvParameters)
+ @Description			led1_task				: LED1任务函数
+ @Input				pvParameters
+ @Return				void
+**********************************************************************************************************/
+void led1_task(void *pvParameters)
+{
+	while (true) {
+		LED1(ON);
+		vTaskDelay(200);
+		LED1(OFF);
+		vTaskDelay(800);
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void float_task(void *pvParameters)
+ @Description			float_task			: 浮点测试任务
+ @Input				pvParameters
+ @Return				void
+**********************************************************************************************************/
+void float_task(void *pvParameters)
+{
+	static double float_num = 0.00;
+	
+	while (true) {
+		float_num += 0.01f;
+		printf("float_num: %.4f\r\n", float_num);
+		vTaskDelay(1000);
+	}
+}
+
+
+#if DEVICE_DEBUG
 /********************************************* DEBUG *****************************************************/
 
 /****************************************** Debug Ending *************************************************/
@@ -118,6 +248,8 @@ void DeBugMain(void)
 		
 			Delay_MS(200);
 		}
+		
+		printf("Hello World!\n");
 #endif
 		
 #if 0
@@ -146,6 +278,9 @@ void DeBugMain(void)
 		Uart3_PortSerialEnable(ENABLE, DISABLE);
 #endif
 		
+		IWDG_Feed();
+		
+		Delay_MS(1000);
 	}
 }
 #endif

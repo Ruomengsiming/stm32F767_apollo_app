@@ -1,8 +1,10 @@
 #ifndef __MAIN_H
 #define   __MAIN_H
 
-#include "stm32f7xx_hal.h"
-#include "stdbool.h"
+#include "sys.h"
+#include "delay.h"
+#include "usart.h"
+
 
 
 #endif /* __MAIN_H */

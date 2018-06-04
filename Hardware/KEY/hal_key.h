@@ -2,6 +2,8 @@
 #define   __HAL_KEY_H
 
 #include "sys.h"
+#include "delay.h"
+#include "usart.h"
 
 #define KEY0_GPIOx						GPIOH
 #define KEY0_PIN						GPIO_PIN_3
