@@ -19,6 +19,7 @@
 #include "hal_led.h"
 #include "hal_key.h"
 #include "hal_exti.h"
+#include "hal_timer.h"
 
 #if SYSTEM_SUPPORT_OS													//如果使用OS, 则包括下面的头文件(以FreeRTOS为例)即可
 #include "FreeRTOS.h"													//支持OS时使用
@@ -50,11 +51,21 @@ void led0_task(void *pvParameters);										//任务函数
 TaskHandle_t				LED1Task_Handler;								//任务句柄
 void led1_task(void *pvParameters);										//任务函数
 
-#define FLOAT_TASK_PRIO		4											//任务优先级
-#define FLOAT_STK_SIZE 		128											//任务堆栈大小
-TaskHandle_t				FLOATTask_Handler;								//任务句柄
-void float_task(void *pvParameters);										//任务函数
+#define PRINT1_TASK_PRIO		4											//任务优先级
+#define PRINT1_STK_SIZE 		128											//任务堆栈大小
+TaskHandle_t				PRINT1Task_Handler;								//任务句柄
+void print1_task(void *pvParameters);										//任务函数
+
+#define PRINT2_TASK_PRIO		5											//任务优先级
+#define PRINT2_STK_SIZE		128											//任务堆栈大小
+TaskHandle_t				PRINT2Task_Handler;								//任务句柄
+void print2_task(void *pvParameters);										//任务函数
 /****************************************** FreeRTOS Ending **********************************************/
+
+/****************************************** Static Code **************************************************/
+static const char *pcTextForTask1 = "Print Task 1 is running\r\n";
+static const char *pcTextForTask2 = "Print Task 2 is running\r\n";
+/****************************************** Static Ending ************************************************/
 
 /**********************************************************************************************************
  @Function			int main(void)
@@ -75,10 +86,14 @@ int main(void)
 	Uart1_Init(9600);													//初始化串口1波特率9600
 	Uart2_Init(9600);													//初始化串口2波特率9600
 	Uart3_Init(9600);													//初始化串口3波特率9600
-	
+#if 0
 	LED_Init();														//初始化LED
 	KEY_Init();														//初始化KEY
 	EXTI_Init();														//初始化EXTI
+	TIM4_Init(5000-1, 10800-1);											//初始化TIM4周期500MS
+#else
+	LED_Init();														//初始化LED
+#endif
 	
 	/* 创建开始任务 */
 	xTaskCreate( (TaskFunction_t )start_task,								//任务函数
@@ -89,6 +104,8 @@ int main(void)
 			   (TaskHandle_t*  )&StartTask_Handler );						//任务句柄
 	
 	vTaskStartScheduler();												//开启任务调度
+	
+	while (true);
 	
 #if 0
 	while (true) {
@@ -131,13 +148,21 @@ void start_task(void *pvParameters)
 			   (UBaseType_t    )LED1_TASK_PRIO,							//任务优先级
 			   (TaskHandle_t*  )&LED1Task_Handler );						//任务句柄
 	
-	/* 浮点测试任务 */
-	xTaskCreate( (TaskFunction_t )float_task,								//任务函数
-			   (const char*    )"float_task",								//任务名称
-			   (uint16_t       )FLOAT_STK_SIZE,							//任务堆栈大小
-			   (void*          )NULL,									//传递给任务函数的参数
-			   (UBaseType_t    )FLOAT_TASK_PRIO,							//任务优先级
-			   (TaskHandle_t*  )&FLOATTask_Handler );						//任务句柄
+	/* 创建Print1任务 */
+	xTaskCreate( (TaskFunction_t )print1_task,								//任务函数
+			   (const char*    )"print1_task",								//任务名称
+			   (uint16_t       )PRINT1_STK_SIZE,							//任务堆栈大小
+			   (void*          )pcTextForTask1,							//传递给任务函数的参数
+			   (UBaseType_t    )PRINT1_TASK_PRIO,							//任务优先级
+			   (TaskHandle_t*  )&PRINT1Task_Handler );						//任务句柄
+	
+	/* 创建Print2任务 */
+	xTaskCreate( (TaskFunction_t )print2_task,								//任务函数
+			   (const char*    )"print2_task",								//任务名称
+			   (uint16_t       )PRINT2_STK_SIZE,							//任务堆栈大小
+			   (void*          )pcTextForTask2,							//传递给任务函数的参数
+			   (UBaseType_t    )PRINT2_TASK_PRIO,							//任务优先级
+			   (TaskHandle_t*  )&PRINT2Task_Handler );						//任务句柄
 	
 	vTaskDelete(StartTask_Handler);										//删除开始任务
 	
@@ -154,7 +179,7 @@ void led0_task(void *pvParameters)
 {
 	while (true) {
 		LED0_Toggle();
-		vTaskDelay(500);
+		vTaskDelay(500 / portTICK_RATE_MS);
 	}
 }
 
@@ -168,26 +193,41 @@ void led1_task(void *pvParameters)
 {
 	while (true) {
 		LED1(ON);
-		vTaskDelay(200);
+		vTaskDelay(200 / portTICK_RATE_MS);
 		LED1(OFF);
-		vTaskDelay(800);
+		vTaskDelay(800 / portTICK_RATE_MS);
 	}
 }
 
 /**********************************************************************************************************
- @Function			void float_task(void *pvParameters)
- @Description			float_task			: 浮点测试任务
+ @Function			void print1_task(void *pvParameters)
+ @Description			print1_task			: Print1任务函数
  @Input				pvParameters
  @Return				void
 **********************************************************************************************************/
-void float_task(void *pvParameters)
+void print1_task(void *pvParameters)
 {
-	static double float_num = 0.00;
+	char *pcTaskName = (char *)pvParameters;
 	
 	while (true) {
-		float_num += 0.01f;
-		printf("float_num: %.4f\r\n", float_num);
-		vTaskDelay(1000);
+		printf("%s", pcTaskName);
+		vTaskDelay(1000 / portTICK_RATE_MS);
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void print2_task(void *pvParameters)
+ @Description			print2_task			: Print2任务函数
+ @Input				pvParameters
+ @Return				void
+**********************************************************************************************************/
+void print2_task(void *pvParameters)
+{
+	char *pcTaskName = (char *)pvParameters;
+	
+	while (true) {
+		printf("%s", pcTaskName);
+		vTaskDelay(1000 / portTICK_RATE_MS);
 	}
 }
 

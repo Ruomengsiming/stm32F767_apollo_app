@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F767xx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Core;..\HALLibraries\Inc;..\HALLibraries\Src;..\User;..\System\Sys;..\System\Delay;..\System\Usart;..\Libraries\FreeRTOS\Source;..\Libraries\FreeRTOS\Source\include;..\Libraries\FreeRTOS\Source\portable\Keil;..\Libraries\FreeRTOS\Source\portable\MemMang;..\Libraries\FreeRTOS\Source\portable\RVDS\ARM_CM7\r0p1;..\Hardware\IWDG;..\Hardware\WWDG;..\Hardware\LED;..\Hardware\KEY;..\Hardware\EXTI</IncludePath>
+              <IncludePath>..\Core;..\HALLibraries\Inc;..\HALLibraries\Src;..\User;..\System\Sys;..\System\Delay;..\System\Usart;..\Libraries\FreeRTOS\Source;..\Libraries\FreeRTOS\Source\include;..\Libraries\FreeRTOS\Source\portable\Keil;..\Libraries\FreeRTOS\Source\portable\MemMang;..\Libraries\FreeRTOS\Source\portable\RVDS\ARM_CM7\r0p1;..\Hardware\IWDG;..\Hardware\WWDG;..\Hardware\LED;..\Hardware\KEY;..\Hardware\EXTI;..\Hardware\TIMER</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -868,6 +868,11 @@
               <FileName>hal_exti.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Hardware\EXTI\hal_exti.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\TIMER\hal_timer.c</FilePath>
             </File>
           </Files>
         </Group>

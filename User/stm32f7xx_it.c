@@ -19,11 +19,39 @@
 #include "hal_led.h"
 #include "hal_key.h"
 #include "hal_exti.h"
+#include "hal_timer.h"
 
 #if SYSTEM_SUPPORT_OS													//如果使用OS, 则包括下面的头文件(以FreeRTOS为例)即可
 #include "FreeRTOS.h"													//支持OS时使用
 #include "task.h"
 #endif
+
+/**********************************************************************************************************
+ @Function			void TIM4_IRQHandler(void)
+ @Description			定时器4中断服务程序
+ @Input				void
+ @Return				void
+**********************************************************************************************************/
+void TIM4_IRQHandler(void)
+{
+	HAL_TIM_IRQHandler(&TIM4_Handler);										//调用中断处理公共函数
+}
+
+/**********************************************************************************************************
+ @Function			void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+ @Description			定时器中断处理回调函数
+					在HAL库中所有定时器中断服务函数都会调用此函数
+ @Input				htim : TIM
+ @Return				void
+**********************************************************************************************************/
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	if (htim->Instance == TIM4)
+	{
+		TIM4_Event_IRQn();
+	}
+}
+
 
 /**********************************************************************************************************
  @Function			void EXTI0_IRQHandler(void)

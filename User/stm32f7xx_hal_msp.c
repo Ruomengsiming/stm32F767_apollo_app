@@ -21,6 +21,7 @@
 #include "hal_led.h"
 #include "hal_key.h"
 #include "hal_exti.h"
+#include "hal_timer.h"
 
 #if SYSTEM_SUPPORT_OS													//如果使用OS, 则包括下面的头文件(以FreeRTOS为例)即可
 #include "FreeRTOS.h"													//支持OS时使用
@@ -47,6 +48,44 @@ void HAL_MspInit(void)
 void HAL_MspDeInit(void)
 {
 	
+}
+
+
+/**********************************************************************************************************
+ @Function			void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
+ @Description			TIM底层驱动, 时钟配置, 中断配置
+					此函数会被HAL_TIM_Base_Init()调用
+ @Input				htim:TIM句柄
+ @Output				void
+ @Return				void
+**********************************************************************************************************/
+void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
+{
+	if (htim->Instance == TIM4)
+	{
+		__HAL_RCC_TIM4_CLK_ENABLE();										//使能通用定时器4时钟
+		
+		HAL_NVIC_SetPriority(TIM4_IRQn, 3, 0);								//强占优先级3, 次优先级0
+		HAL_NVIC_EnableIRQ(TIM4_IRQn);									//使能TIM4中断
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim)
+ @Description			TIM底层驱动, 时钟失能, 中断关闭
+					此函数会被HAL_TIM_Base_DeInit()调用
+ @Input				htim:TIM句柄
+ @Output				void
+ @Return				void
+**********************************************************************************************************/
+void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim)
+{
+	if (htim->Instance == TIM4)
+	{
+		__HAL_RCC_TIM4_CLK_DISABLE();										//失能通用定时器4时钟
+		
+		HAL_NVIC_DisableIRQ(TIM4_IRQn);									//失能TIM4中断
+	}
 }
 
 

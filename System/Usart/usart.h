@@ -3,7 +3,7 @@
 
 #include "sys.h"
 
-#define PRINTF_USART			USART1									//Printf使用串口
+#define PRINTF_USART			USART2									//Printf使用串口
 
 #define ENTER_CRITICAL_SECTION()	Uart_EnterCriticalSection();
 #define EXIT_CRITICAL_SECTION()	Uart_ExitCriticalSection();
