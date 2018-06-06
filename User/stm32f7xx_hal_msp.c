@@ -53,7 +53,7 @@ void HAL_MspDeInit(void)
 
 /**********************************************************************************************************
  @Function			void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
- @Description			TIM底层驱动, 时钟配置, 中断配置
+ @Description			TIM_BASE底层驱动, 时钟配置, 中断配置
 					此函数会被HAL_TIM_Base_Init()调用
  @Input				htim:TIM句柄
  @Output				void
@@ -72,7 +72,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
 
 /**********************************************************************************************************
  @Function			void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim)
- @Description			TIM底层驱动, 时钟失能, 中断关闭
+ @Description			TIM_BASE底层驱动, 时钟失能, 中断关闭
 					此函数会被HAL_TIM_Base_DeInit()调用
  @Input				htim:TIM句柄
  @Output				void
@@ -85,6 +85,59 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim)
 		__HAL_RCC_TIM4_CLK_DISABLE();										//失能通用定时器4时钟
 		
 		HAL_NVIC_DisableIRQ(TIM4_IRQn);									//失能TIM4中断
+	}
+}
+
+
+/**********************************************************************************************************
+ @Function			void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
+ @Description			TIM_PWM底层驱动, 时钟配置, 中断配置
+					此函数会被HAL_TIM_PWM_Init()调用
+ @Input				htim:TIM句柄
+ @Output				void
+ @Return				void
+**********************************************************************************************************/
+void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
+{
+	GPIO_InitTypeDef GPIO_Initure;
+	
+	if (htim->Instance == TIM3)
+	{
+		__HAL_RCC_GPIOB_CLK_ENABLE();
+		__HAL_RCC_TIM3_CLK_ENABLE();										//使能通用定时器3时钟
+		
+		GPIO_Initure.Pin		= GPIO_PIN_0;								//PB0
+		GPIO_Initure.Mode		= GPIO_MODE_AF_PP;							//复用推挽输出
+		GPIO_Initure.Pull		= GPIO_PULLUP;								//上拉
+		GPIO_Initure.Speed		= GPIO_SPEED_HIGH;							//高速
+		GPIO_Initure.Alternate	= GPIO_AF2_TIM3;							//PB0复用为TIM3_CH3
+		HAL_GPIO_Init(GPIOB, &GPIO_Initure);								//初始化PB0
+		
+		GPIO_Initure.Pin		= GPIO_PIN_1;								//PB1
+		GPIO_Initure.Mode		= GPIO_MODE_AF_PP;							//复用推挽输出
+		GPIO_Initure.Pull		= GPIO_PULLUP;								//上拉
+		GPIO_Initure.Speed		= GPIO_SPEED_HIGH;							//高速
+		GPIO_Initure.Alternate	= GPIO_AF2_TIM3;							//PB1复用为TIM3_CH4
+		HAL_GPIO_Init(GPIOB, &GPIO_Initure);								//初始化PB1
+	}
+}
+
+/**********************************************************************************************************
+ @Function			void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef *htim)
+ @Description			TIM_PWM底层驱动, 时钟失能, 中断关闭
+					此函数会被HAL_TIM_PWM_DeInit()调用
+ @Input				htim:TIM句柄
+ @Output				void
+ @Return				void
+**********************************************************************************************************/
+void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef *htim)
+{
+	if (htim->Instance == TIM3)
+	{
+		__HAL_RCC_TIM3_CLK_DISABLE();										//失能通用定时器4时钟
+		
+		HAL_GPIO_DeInit(GPIOB, GPIO_PIN_0);
+		HAL_GPIO_DeInit(GPIOB, GPIO_PIN_1);
 	}
 }
 

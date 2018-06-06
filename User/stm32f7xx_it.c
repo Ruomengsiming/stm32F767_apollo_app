@@ -48,7 +48,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim->Instance == TIM4)
 	{
-		TIM4_Event_IRQn();
+		TIM4_BASE_Event_IRQn();
 	}
 }
 

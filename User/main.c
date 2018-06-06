@@ -65,6 +65,7 @@ void print2_task(void *pvParameters);										//任务函数
 /****************************************** Static Code **************************************************/
 static const char *pcTextForTask1 = "Print Task 1 is running\r\n";
 static const char *pcTextForTask2 = "Print Task 2 is running\r\n";
+static const u8 PwmindexWave[] = {1,1,2,2,3,4,6,8,10,14,19,25,33,44,59,80,107,143,191,255,255,191,143,107,80,59,44,33,25,19,14,10,8,6,4,3,2,2,1,1};
 /****************************************** Static Ending ************************************************/
 
 /**********************************************************************************************************
@@ -90,9 +91,11 @@ int main(void)
 	LED_Init();														//初始化LED
 	KEY_Init();														//初始化KEY
 	EXTI_Init();														//初始化EXTI
-	TIM4_Init(5000-1, 10800-1);											//初始化TIM4周期500MS
+	TIM3_PWM_Init(500-1, 108-1);											//初始化TIM3周期500US
+	TIM4_BASE_Init(5000-1, 10800-1);										//初始化TIM4周期500MS
 #else
 	LED_Init();														//初始化LED
+	TIM3_PWM_Init(500-1, 108-1);											//初始化TIM3周期500US
 #endif
 	
 	/* 创建开始任务 */
@@ -177,10 +180,27 @@ void start_task(void *pvParameters)
 **********************************************************************************************************/
 void led0_task(void *pvParameters)
 {
+	u8 led0dir = 1;
+	u16 led0pwmval = 0;
+	
+	while (true) {
+		vTaskDelay(80 / portTICK_RATE_MS);
+		
+		if (led0dir) led0pwmval++;
+		else led0pwmval--;
+		
+		if (led0pwmval >= 40) led0dir = 0;
+		else if (led0pwmval == 0) led0dir = 1;
+		
+		TIM3_SetCH4Compare(PwmindexWave[led0pwmval]);
+	}
+	
+#if 0
 	while (true) {
 		LED0_Toggle();
 		vTaskDelay(500 / portTICK_RATE_MS);
 	}
+#endif
 }
 
 /**********************************************************************************************************
@@ -191,12 +211,29 @@ void led0_task(void *pvParameters)
 **********************************************************************************************************/
 void led1_task(void *pvParameters)
 {
+	u8 led1dir = 1;
+	u16 led1pwmval = 0;
+	
+	while (true) {
+		vTaskDelay(50 / portTICK_RATE_MS);
+		
+		if (led1dir) led1pwmval++;
+		else led1pwmval--;
+		
+		if (led1pwmval >= 40) led1dir = 0;
+		else if (led1pwmval == 0) led1dir = 1;
+		
+		TIM3_SetCH3Compare(PwmindexWave[led1pwmval]);
+	}
+	
+#if 0
 	while (true) {
 		LED1(ON);
 		vTaskDelay(200 / portTICK_RATE_MS);
 		LED1(OFF);
 		vTaskDelay(800 / portTICK_RATE_MS);
 	}
+#endif
 }
 
 /**********************************************************************************************************
